@@ -24,8 +24,12 @@ class User {
   User({required this.name, required this.imageUrl});
 }
 
-class UserListPage extends StatelessWidget {
-  // Lista simulada de usuarios
+class UserListPage extends StatefulWidget {
+  @override
+  _UserListPageState createState() => _UserListPageState();
+}
+
+class _UserListPageState extends State<UserListPage> {
   final List<User> users = [
     User(name: 'Juan Pérez', imageUrl: 'https://via.placeholder.com/150'),
     User(name: 'María López', imageUrl: 'https://via.placeholder.com/150'),
@@ -37,20 +41,69 @@ class UserListPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Lista de Usuarios'),
+        title: const Text('Lista de contactos'),
       ),
       body: ListView.builder(
         itemCount: users.length,
         itemBuilder: (context, index) {
           final user = users[index];
           return ListTile(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10.0),
+              side: const BorderSide(
+                color: Colors.grey,
+                width: 1.0,
+              ),
+            ),
+            tileColor: Colors.white,
             leading: CircleAvatar(
               backgroundImage: NetworkImage(user.imageUrl),
             ),
             title: Text(user.name),
+            subtitle: Text('Descripción del usuario $index'),
+            trailing: const Icon(Icons.arrow_forward),
+            onTap: () {
+              // Acción al hacer clic en el ListTile
+              print('Seleccionado: ${user.name}');
+            },
           );
         },
       ),
+      bottomNavigationBar: BottomAppBar(
+          child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 10),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: <Widget>[
+            ElevatedButton(
+              onPressed: () {
+                // Acción del primer botón
+                print("Agregar usuario");
+                setState(() {
+                  users.add(User(
+                      name: 'Nuevo Usuario',
+                      imageUrl: 'https://via.placeholder.com/150'));
+                });
+              },
+              child: const Text('add user'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                // Acción del segundo botón
+                print("Remove user");
+              },
+              child: const Text('Botón 2'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                // Acción del tercer botón
+                print("Botón 3 presionado");
+              },
+              child: const Text('Botón 3'),
+            ),
+          ],
+        ),
+      )),
     );
   }
 }
