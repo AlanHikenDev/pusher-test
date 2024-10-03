@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:myapp/db_helper.dart';
 
 void main() {
   runApp(MyApp());
@@ -30,7 +31,7 @@ class UserListPage extends StatefulWidget {
 }
 
 class _UserListPageState extends State<UserListPage> {
-  final List<User> users = [
+  List<User> users = [
     User(name: 'Juan Pérez', imageUrl: 'https://via.placeholder.com/150'),
     User(name: 'María López', imageUrl: 'https://via.placeholder.com/150'),
     User(name: 'Carlos Sánchez', imageUrl: 'https://via.placeholder.com/150'),
@@ -38,10 +39,50 @@ class _UserListPageState extends State<UserListPage> {
   ];
 
   @override
+  void initState() {
+    super.initState();
+    loadUsers();
+  }
+
+  void loadUsers() async {
+    // Realiza la operación asíncrona de obtener los usuarios
+    final data = await getUsers();
+    print(data);
+    List<Map<String, dynamic>> usersData = data;
+
+    // Actualiza la UI con los datos obtenidos
+    setState(() {
+      users = usersData.map((user) {
+        return User(
+          name: user['name'],
+          imageUrl: 'https://via.placeholder.com/150',
+        );
+      }).toList();
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Lista de contactos'),
+        title: Text('Lista de Usuarios'),
+        bottom: PreferredSize(
+          preferredSize: Size.fromHeight(50.0),
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: TextField(
+              onChanged: (value) {
+                setState(() {
+                  //searchQuery = value;
+                });
+              },
+              decoration: InputDecoration(
+                hintText: 'Buscar...',
+                border: OutlineInputBorder(),
+              ),
+            ),
+          ),
+        ),
       ),
       body: ListView.builder(
         itemCount: users.length,
@@ -70,15 +111,21 @@ class _UserListPageState extends State<UserListPage> {
         },
       ),
       bottomNavigationBar: BottomAppBar(
-          child: Padding(
+        child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 10),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: <Widget>[
             ElevatedButton(
-              onPressed: () {
+              onPressed: () async {
                 // Acción del primer botón
                 print("Agregar usuario");
+                Map<String, dynamic> newUser = {
+                  //'id': 2,
+                  'name': 'Example Doe',
+                };
+
+                await insertUser(newUser);
                 setState(() {
                   users.add(User(
                       name: 'Nuevo Usuario',
